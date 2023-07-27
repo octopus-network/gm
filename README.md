@@ -1,18 +1,19 @@
 # Gaiad Manager `gm`
 
 ## TL;DR
-* Tool to manage local gaiad instances - no Docker needed.
+* Tool to manage local [oysterd](https://github.com/octopus-network/oyster) instances - no Docker needed.
 * `bin/gm install` to install it. Follow the instructions there for dependencies.
+* Copy the `consumer_section.json` into `$HOME/.gm/`.
 * `gm start` to start the nodes specified in the configuration.
 * Config file is in `$HOME/.gm/gm.toml` play around and add more nodes.
 * Tab completion is pretty good, use it! Or run `gm` by itself for help.
 * Pre-1.0 warning: Got a shell error? [Raise an issue!](https://github.com/informalsystems/gm/issues)
 
 ## Overview
-Gaiad Manager (`gm` from now on) is an easily configurable command-line tool (CLI) that helps manage local `gaiad`
+Gaiad Manager (`gm` from now on) is an easily configurable command-line tool (CLI) that helps manage local `oysterd`
 networks.
 
-Typical problems running multiple `gaiad` instances involve:
+Typical problems running multiple `oysterd` instances involve:
 * Identifying binaries and configurations for startup and nodes on the system for shutdown.
 * Managing port allocations on the local machine.
 * Copying and setting up configurations among nodes on the same network.
@@ -27,6 +28,7 @@ configuration updates.
   [`stoml`](https://github.com/freshautomations/stoml/releases) installed in your PATH (put them in `/usr/local/bin`)
 * `sed`, `tr` (trying to remove these in the future)
 * For shell-completion Bourne Again Shell (`bash`) for the local user
+* [`jq`](https://github.com/jqlang/jq) installed in your PATH
 
 ## How to run
 1. Install the dependencies.
@@ -91,7 +93,7 @@ the `gm.toml` file for node configuration. By default, newly created node config
 **Where**: Default is the folder `$HOME/.gm/<node_name>`, but it can be configured in `gm.toml` using the `home_dir`
 entry.
 
-**Description**: The configuration and data folder for a node. Partially resembles a gaiad home folder (`.gaia`) but
+**Description**: The configuration and data folder for a node. Partially resembles a oysterd home folder (`.gaia`) but
 it has additional files to store the wallet mnemonics.
 
 **Entries**:
@@ -105,7 +107,7 @@ config. The persistent_peers section is automatically managed if the node has th
 * `pid` - the file that contains the process ID of the running node. (a la `/var/run`) Use `gm status` to see.
 * `log` - the log file that contains the output of the running node. Use `gm log <node>` to see.
 
-This setup allows developers to run a node outside of `gm` just by pointing the `gaiad --home-dir` to the folder.
+This setup allows developers to run a node outside of `gm` just by pointing the `oysterd --home-dir` to the folder.
 
 ### Ports
 Ports are defined by the `ports_start_at` parameter which will be the first port assigned.
@@ -134,10 +136,10 @@ node4 GRPCW: http://localhost:27055
 Note: The GRPC-Web port was recently introduced (after gaiad v4.2.1). It will be ignored in earlier versions.
 
 ## Minimal configuration example
-The following configuration is all you need to specify 2 `gaiad` chains. `hermes` will know about these chains.
+The following configuration is all you need to specify 2 `oysterd` chains. `hermes` will know about these chains.
 ```toml
 [global]
-gaiad_binary="path/to/your/gaiad"
+gaiad_binary="path/to/your/oysterd"
 add_to_hermes=true
 
 [global.hermes]
@@ -290,7 +292,7 @@ Tip: We fund it from the wallet called `wallet` so when that runs out, this comm
 
 ### `gm nuke [<node> ...]`
 **Description**: Stop the node(s), delete their configuration, recreate fresh configuration and start the nodes up again.
-This will use the defined `gaiad` binary and configuration.
+This will use the defined `oysterd` binary and configuration.
 If no node is specified then it will nuke all nodes.
 
 Tip: Nodes that were stopped originally will NOT be started. Nodes that were running will be stopped and restarted after
@@ -303,7 +305,7 @@ If no node is specified then it lists all nodes' ports.
 Tip: When automation doesn't get you all the way, this helps in identifying your nodes on your local machine.
 
 ### `gm start [<node> ...]`
-**Description**: Start the node(s). This will use the defined `gaiad` binary and configuration.
+**Description**: Start the node(s). This will use the defined `oysterd` binary and configuration.
 If no node is specified then it will start all nodes.
 
 Tip: You can freely start nodes over-and-over. If they are proven running, the command will not do anything, if they
@@ -320,14 +322,14 @@ Tip: PIDs in brackets mean that the node is not running when `gm` started them. 
 error or maybe the user simply killed the PID. No worries, `gm` will clean up when `start` or `stop` is invoked.
 
 ### `gm stop [<node> ...]`
-**Description**: Stop the node(s). This will use the defined `gaiad` binary and configuration.
+**Description**: Stop the node(s). This will use the defined `oysterd` binary and configuration.
 If no node is specified then it will stop all nodes.
 
 Tip: If a node was killed, you can use `gm stop` to clean up the PID file.
 
 ### `gm reset [<node> ...]`
 **Description**: Run `unsafe-reset-all` on the node(s) and reset the node database. This will use the defined
-`gaiad` binary and configuration. If no node is specified then it will run for all nodes.
+`oysterd` binary and configuration. If no node is specified then it will run for all nodes.
 
 Tip: It will stop nodes that are running and restart them after the database reset.
 
@@ -357,7 +359,7 @@ The same is true for `hermes_binary`.
 `gm.toml`:
 ```toml
 [global]
-gaiad_binary="$GOPATH/bin/gaiad"
+gaiad_binary="$GOPATH/bin/oysterd"
 
 [global.hermes]
 binary="./hermes"
@@ -416,7 +418,7 @@ You might need to replace the value of the `gaiad_binary` entry, if you don't se
 `gm.toml`:
 ```toml
 [global]
-gaiad_binary="$GOPATH/bin/gaiad"
+gaiad_binary="$GOPATH/bin/oysterd"
 
 [global.hermes]
 binary="./hermes"

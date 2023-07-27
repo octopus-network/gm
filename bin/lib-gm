@@ -35,7 +35,7 @@ get_operating_system() {
 
 set_config_defaults() {
     OP_SYS="$(get_operating_system)"
-    GLOBAL_GAIAD_BINARY="$(which gaiad || echo "https://github.com/cosmos/gaia/releases/download/v5.0.6/gaiad-v5.0.6-${OP_SYS}-amd64")"
+    GLOBAL_GAIAD_BINARY="$(which oysterd)"
     #GLOBAL_PORTS_START_AT is deliberately not exported because it is updated sometimes during execution
     DEFAULT_PORTS_START_AT=27000
     GLOBAL_HOME_DIR="${HOME}/.gm"
@@ -674,12 +674,19 @@ create() {
       "$GAIAD_BINARY" $GENESIS_CMD_PREFIX add-genesis-account "wallet${EXTRA_WALLETS_COUNTER}" "100000000${DENOM},100000000samoleans" --keyring-backend test --home "${HOME_DIR}"
       EXTRA_WALLETS_COUNTER="$((EXTRA_WALLETS_COUNTER - 1))"
     done
-    # Create gentx
-    # shellcheck disable=SC2086
-    "$GAIAD_BINARY" $GENESIS_CMD_PREFIX gentx validator "1000000${DENOM}" --keyring-backend test --keyring-dir "${HOME_DIR}" --home "${HOME_DIR}" --chain-id "$1" 2> /dev/null
-    # Collect gentxs
-    # shellcheck disable=SC2086
-    "$GAIAD_BINARY" $GENESIS_CMD_PREFIX collect-gentxs --home "${HOME_DIR}" 2> /dev/null
+    # # Create gentx
+    # # shellcheck disable=SC2086
+    # "$GAIAD_BINARY" $GENESIS_CMD_PREFIX gentx validator "1000000${DENOM}" --keyring-backend test --keyring-dir "${HOME_DIR}" --home "${HOME_DIR}" --chain-id "$1" 2> /dev/null
+    # # Collect gentxs
+    # # shellcheck disable=SC2086
+    # "$GAIAD_BINARY" $GENESIS_CMD_PREFIX collect-gentxs --home "${HOME_DIR}" 2> /dev/null
+    JQ_BINARY_PATH="$(which jq)"
+    VALIDATOR_KEY="$($JQ_BINARY_PATH -r .pub_key.value $HOME_DIR/config/priv_validator_key.json)"
+    info "$1 validator pubkey $VALIDATOR_KEY" 
+    $JQ_BINARY_PATH ".initial_val_set[0].pub_key.ed25519 = \"$VALIDATOR_KEY\"" $GLOBAL_HOME_DIR/consumer_section.json > $GLOBAL_HOME_DIR/consumer_section_updated.json
+    $JQ_BINARY_PATH -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $HOME_DIR/config/genesis.json $GLOBAL_HOME_DIR/consumer_section_updated.json > $GLOBAL_HOME_DIR/genesis_consumer.json
+	  rm $GLOBAL_HOME_DIR/consumer_section_updated.json
+    mv $GLOBAL_HOME_DIR/genesis_consumer.json $HOME_DIR/config/genesis.json    
     # Validate genesis
     # shellcheck disable=SC2086
     "$GAIAD_BINARY" $GENESIS_CMD_PREFIX validate-genesis --home "${HOME_DIR}" > /dev/null
