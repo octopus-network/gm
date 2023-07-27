@@ -84,6 +84,7 @@ make install
 # install gm
 git clone git@github.com:octopus-network/gm.git
 cd gm
+git checkout oyster
 bin/gm install
 
 # copy config file
