@@ -3,7 +3,6 @@
 ## TL;DR
 * Tool to manage local [oysterd](https://github.com/octopus-network/oyster) instances - no Docker needed.
 * `bin/gm install` to install it. Follow the instructions there for dependencies.
-* Copy the `consumer_section.json` into `$HOME/.gm/`.
 * `gm start` to start the nodes specified in the configuration.
 * Config file is in `$HOME/.gm/gm.toml` play around and add more nodes.
 * Tab completion is pretty good, use it! Or run `gm` by itself for help.
@@ -73,6 +72,27 @@ apt install bash-completion || yum install bash-completion
 Note: The `shell-support` script allows bash-completion as well as creating a `gm` alias, so you don't need to add more
 entries to your PATH environment variable. If you don't want to use this, you can always just add `$HOME/.gm/bin` to
 your path.
+
+## Quick Start
+```bash
+# install oysterd
+git clone git@github.com:octopus-network/oyster.git
+cd oyster
+git checkout remove_msg_filter_for_test
+make install
+
+# install gm
+git clone git@github.com:octopus-network/gm.git
+cd gm
+bin/gm install
+
+# copy config file
+cp gm.toml $HOME/.gm/
+cp consumer_section.json $HOME/.gm/
+
+# start
+gm start
+```
 
 ## Folders and files
 ### The HOME folder
