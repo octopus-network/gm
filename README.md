@@ -88,7 +88,7 @@ git checkout oyster
 bin/gm install
 
 # copy config file
-cp gm.toml $HOME/.gm/
+cp gm.toml.example $HOME/.gm/gm.toml
 cp consumer_section.json $HOME/.gm/
 
 # start
