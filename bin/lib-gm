@@ -664,14 +664,14 @@ create() {
     GENESIS_CMD_PREFIX=$(get_genesis_cmd_prefix "$1")
     DENOM="$(get_staking_denom "$1")"
     # shellcheck disable=SC2086
-    "$GAIAD_BINARY" $GENESIS_CMD_PREFIX add-genesis-account validator "100000000${DENOM},100000000samoleans" --keyring-backend test --home "${HOME_DIR}"
+    "$GAIAD_BINARY" $GENESIS_CMD_PREFIX add-genesis-account validator "100000000${DENOM}" --keyring-backend test --home "${HOME_DIR}"
     # shellcheck disable=SC2086
-    "$GAIAD_BINARY" $GENESIS_CMD_PREFIX add-genesis-account wallet "100000000${DENOM},100000000samoleans" --keyring-backend test --home "${HOME_DIR}"
+    "$GAIAD_BINARY" $GENESIS_CMD_PREFIX add-genesis-account wallet "100000000${DENOM}" --keyring-backend test --home "${HOME_DIR}"
     EXTRA_WALLETS_COUNTER="$(get_extra_wallets "$1")"
     while [ "$EXTRA_WALLETS_COUNTER" -gt 0 ];
     do
       # shellcheck disable=SC2086
-      "$GAIAD_BINARY" $GENESIS_CMD_PREFIX add-genesis-account "wallet${EXTRA_WALLETS_COUNTER}" "100000000${DENOM},100000000samoleans" --keyring-backend test --home "${HOME_DIR}"
+      "$GAIAD_BINARY" $GENESIS_CMD_PREFIX add-genesis-account "wallet${EXTRA_WALLETS_COUNTER}" "100000000${DENOM}" --keyring-backend test --home "${HOME_DIR}"
       EXTRA_WALLETS_COUNTER="$((EXTRA_WALLETS_COUNTER - 1))"
     done
     # # Create gentx
@@ -687,7 +687,7 @@ create() {
     $JQ_BINARY_PATH -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $HOME_DIR/config/genesis.json $GLOBAL_HOME_DIR/consumer_section_updated.json > $GLOBAL_HOME_DIR/genesis_consumer.json
 	  rm $GLOBAL_HOME_DIR/consumer_section_updated.json
     mv $GLOBAL_HOME_DIR/genesis_consumer.json $HOME_DIR/config/genesis.json
-    
+
     # set bank.denom_metadata with the content of denom_metadata.json
     $JQ_BINARY_PATH -s '.[0].app_state.bank.denom_metadata = .[1] | .[0]' $HOME_DIR/config/genesis.json $GLOBAL_HOME_DIR/denom_metadata.json > $GLOBAL_HOME_DIR/genesis_denom_metadata.json
     mv $GLOBAL_HOME_DIR/genesis_denom_metadata.json $HOME_DIR/config/genesis.json
