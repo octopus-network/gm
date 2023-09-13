@@ -90,6 +90,7 @@ bin/gm install
 # copy config file
 cp gm.toml.example $HOME/.gm/gm.toml
 cp consumer_section.json $HOME/.gm/
+cp denom_metadata.json $HOME/.gm/
 
 # start
 gm start
