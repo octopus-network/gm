@@ -686,7 +686,12 @@ create() {
     $JQ_BINARY_PATH ".initial_val_set[0].pub_key.ed25519 = \"$VALIDATOR_KEY\"" $GLOBAL_HOME_DIR/consumer_section.json > $GLOBAL_HOME_DIR/consumer_section_updated.json
     $JQ_BINARY_PATH -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $HOME_DIR/config/genesis.json $GLOBAL_HOME_DIR/consumer_section_updated.json > $GLOBAL_HOME_DIR/genesis_consumer.json
 	  rm $GLOBAL_HOME_DIR/consumer_section_updated.json
-    mv $GLOBAL_HOME_DIR/genesis_consumer.json $HOME_DIR/config/genesis.json    
+    mv $GLOBAL_HOME_DIR/genesis_consumer.json $HOME_DIR/config/genesis.json
+    
+    # set bank.denom_metadata with the content of denom_metadata.json
+    $JQ_BINARY_PATH -s '.[0].app_state.bank.denom_metadata = .[1] | .[0]' $HOME_DIR/config/genesis.json $GLOBAL_HOME_DIR/denom_metadata.json > $GLOBAL_HOME_DIR/genesis_denom_metadata.json
+    mv $GLOBAL_HOME_DIR/genesis_denom_metadata.json $HOME_DIR/config/genesis.json
+
     # Validate genesis
     # shellcheck disable=SC2086
     "$GAIAD_BINARY" $GENESIS_CMD_PREFIX validate-genesis --home "${HOME_DIR}" > /dev/null
