@@ -23,6 +23,7 @@
             }
         ],
         "base": "ustake",
-        "display": "stake"
+        "display": "stake",
+        "symbol": "STAKE"
     }
 ]
